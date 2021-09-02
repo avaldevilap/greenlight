@@ -9,7 +9,7 @@ type Movie struct {
 	gorm.Model
 	Title   string         `json:"title"`
 	Year    int32          `json:"year"`
-	Runtime int32          `json:"runtime"`
+	Runtime Runtime        `json:"runtime" gorm:"type:int"`
 	Genres  pq.StringArray `json:"genres" gorm:"type:text[]"`
 	Version int32          `json:"version" gorm:"default:1"`
 }

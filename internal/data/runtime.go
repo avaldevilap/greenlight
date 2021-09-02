@@ -61,7 +61,5 @@ func (runtime *Runtime) Scan(value interface{}) error {
 	return nil
 }
 func (runtime Runtime) Value() (driver.Value, error) {
-	fmt.Println("runtime.Value()")
-	fmt.Println(runtime)
 	return int64(runtime), nil
 }

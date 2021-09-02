@@ -1,16 +1,17 @@
 package data
 
 import (
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
 type Movie struct {
 	gorm.Model
-	Title   string   `json:"title"`
-	Year    int32    `json:"year"`
-	Runtime int32    `json:"runtime"`
-	Genres  []string `json:"genres"`
-	Version int32    `json:"version"`
+	Title   string         `json:"title"`
+	Year    int32          `json:"year"`
+	Runtime int32          `json:"runtime"`
+	Genres  pq.StringArray `json:"genres" gorm:"type:text[]"`
+	Version int32          `json:"version" gorm:"default:1"`
 }
 
 type MovieModel struct {

@@ -37,7 +37,7 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 
 // Add a placeholder method for updating a specific record in the movies table.
 func (m MovieModel) Update(movie *Movie) error {
-	return nil
+	return m.DB.Save(movie).Error
 }
 
 // Add a placeholder method for deleting a specific record from the movies table.

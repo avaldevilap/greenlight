@@ -1,0 +1,18 @@
+version: "3.1"
+
+volumes:
+  greenlight_data:
+    external: false
+
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_DB: greenlight
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - greenlight_data:/var/lib/postgresql/data

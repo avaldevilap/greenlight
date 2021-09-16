@@ -1,7 +1,6 @@
 package data
 
 import (
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"strconv"
@@ -40,26 +39,24 @@ func (runtime Runtime) GormDataType() string {
 	return "int32"
 }
 
-func (runtime *Runtime) Scan(value interface{}) error {
-	str, ok := value.([]byte)
-	if !ok {
-		return errors.New("must []byte")
-	}
-	unquotedJSONValue, err := strconv.Unquote(string(str))
-	if err != nil {
-		return ErrInvalidRuntimeFormat
-	}
-	parts := strings.Split(unquotedJSONValue, " ")
-	if len(parts) != 2 || parts[1] != "mins" {
-		return ErrInvalidRuntimeFormat
-	}
-	i, err := strconv.ParseInt(parts[0], 10, 32)
-	if err != nil {
-		return ErrInvalidRuntimeFormat
-	}
-	*runtime = Runtime(i)
-	return nil
-}
-func (runtime Runtime) Value() (driver.Value, error) {
-	return int64(runtime), nil
-}
+// func (runtime *Runtime) Scan(value interface{}) error {
+// 	str := fmt.Sprintf("%v", value)
+// 	fmt.Println(str)
+// 	unquotedJSONValue, err := strconv.Unquote(string(str))
+// 	if err != nil {
+// 		return ErrInvalidRuntimeFormat
+// 	}
+// 	parts := strings.Split(unquotedJSONValue, " ")
+// 	if len(parts) != 2 || parts[1] != "mins" {
+// 		return ErrInvalidRuntimeFormat
+// 	}
+// 	i, err := strconv.ParseInt(parts[0], 10, 32)
+// 	if err != nil {
+// 		return ErrInvalidRuntimeFormat
+// 	}
+// 	*runtime = Runtime(i)
+// 	return nil
+// }
+// func (runtime Runtime) Value() (driver.Value, error) {
+// 	return int64(runtime), nil
+// }

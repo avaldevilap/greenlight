@@ -44,3 +44,18 @@ func (m MovieModel) Update(movie *Movie) error {
 func (m MovieModel) Delete(id int64) error {
 	return m.DB.Delete(&Movie{}, id).Error
 }
+
+func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, error) {
+	movies := []*Movie{}
+	err := m.DB.Where(
+		"LOWER(title) = LOWER(@title) OR @title = ''",
+		map[string]interface{}{"title": title},
+	).Where(
+		"genres::text[] @> @genres OR @genres = '{}'",
+		map[string]interface{}{"genres": pq.Array(genres)},
+	).Find(&movies).Order("id DESC")
+	if err.Error != nil {
+		return nil, err.Error
+	}
+	return movies, nil
+}

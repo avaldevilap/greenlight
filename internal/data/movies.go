@@ -10,7 +10,7 @@ type Movie struct {
 	Title   string         `json:"title" gorm:"index:,type:gin,expression:to_tsvector('english'\\,title)"`
 	Year    int32          `json:"year"`
 	Runtime Runtime        `json:"runtime" gorm:"type:int"`
-	Genres  pq.StringArray `json:"genres" gorm:"type:text[],index:,type:gin"`
+	Genres  pq.StringArray `json:"genres" gorm:"type:text[];index:,type:gin"`
 	Version int32          `json:"version" gorm:"default:1"`
 }
 
@@ -63,7 +63,11 @@ func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*M
 		)
 	}
 
-	err := query.Find(&movies).Order("id DESC")
+	if filters.Sort != "" {
+		query = query.Order(filters.sortColumn() + " " + filters.sortDirection())
+	}
+
+	err := query.Find(&movies).Order("id ASC")
 	if err.Error != nil {
 		return nil, err.Error
 	}

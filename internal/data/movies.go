@@ -48,7 +48,7 @@ func (m MovieModel) Delete(id int64) error {
 func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, Metadata, error) {
 	var totalRecords int64
 	movies := []*Movie{}
-	query := m.DB.Debug()
+	query := m.DB
 
 	if title != "" {
 		query = query.Where(

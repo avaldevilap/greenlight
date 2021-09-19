@@ -45,9 +45,10 @@ func (m MovieModel) Delete(id int64) error {
 	return m.DB.Delete(&Movie{}, id).Error
 }
 
-func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, error) {
+func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, Metadata, error) {
+	var totalRecords int64
 	movies := []*Movie{}
-	query := m.DB
+	query := m.DB.Debug()
 
 	if title != "" {
 		query = query.Where(
@@ -67,10 +68,12 @@ func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*M
 		query = query.Order(filters.sortColumn() + " " + filters.sortDirection())
 	}
 
-	err := query.Limit(filters.limit()).Offset(filters.offset()).Order("id ASC").Find(&movies)
+	err := query.Limit(filters.limit()).Offset(filters.offset()).Order("id ASC").Find(&movies).Count(&totalRecords)
 	if err.Error != nil {
-		return nil, err.Error
+		return nil, Metadata{}, err.Error
 	}
 
-	return movies, nil
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	return movies, metadata, nil
 }

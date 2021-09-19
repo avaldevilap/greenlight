@@ -67,7 +67,7 @@ func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*M
 		query = query.Order(filters.sortColumn() + " " + filters.sortDirection())
 	}
 
-	err := query.Find(&movies).Order("id ASC")
+	err := query.Limit(filters.limit()).Offset(filters.offset()).Order("id ASC").Find(&movies)
 	if err.Error != nil {
 		return nil, err.Error
 	}

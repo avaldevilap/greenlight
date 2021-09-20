@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/avaldevilap/greenlight/internal/data"
 	"github.com/avaldevilap/greenlight/internal/mailer"
@@ -37,6 +38,7 @@ type application struct {
 	logger *log.Logger
 	models data.Models
 	mailer mailer.Mailer
+	wg     sync.WaitGroup
 }
 
 func main() {

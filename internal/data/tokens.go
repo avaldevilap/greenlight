@@ -17,7 +17,7 @@ const (
 type Token struct {
 	Hash      []byte `gorm:"primaryKey"`
 	Plaintext string
-	UserID    int64
+	UserID    uint
 	User      User
 	Expiry    time.Time
 	Scope     string `gorm:"not null"`
@@ -28,7 +28,7 @@ func (t *Token) Validate() error {
 	return validate.Struct(t)
 }
 
-func generateToken(userID int64, ttl time.Duration, scope string) (*Token, error) {
+func generateToken(userID uint, ttl time.Duration, scope string) (*Token, error) {
 	token := &Token{
 		UserID: userID,
 		Expiry: time.Now().Add(ttl),
@@ -53,7 +53,7 @@ type TokenModel struct {
 	DB *gorm.DB
 }
 
-func (m *TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, error) {
+func (m *TokenModel) New(userID uint, ttl time.Duration, scope string) (*Token, error) {
 	token, err := generateToken(userID, ttl, scope)
 	if err != nil {
 		return nil, err
@@ -67,6 +67,6 @@ func (m *TokenModel) Insert(token *Token) error {
 	return m.DB.Create(token).Error
 }
 
-func (m *TokenModel) DeleteAllForUser(scope string, userID int64) error {
+func (m *TokenModel) DeleteAllForUser(scope string, userID uint) error {
 	return m.DB.Delete(&Token{UserID: userID, Scope: scope}).Error
 }

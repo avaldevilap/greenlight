@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/avaldevilap/greenlight/internal/data"
 )
@@ -35,10 +36,20 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	token, err := app.models.Tokens.New(user.ID, 3*24*time.Hour, data.ScopeActivation)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
 	app.wg.Add(1)
 	go func() {
 		defer app.wg.Done()
-		if err := app.mailer.Send(user.Email, "user_welcome.tmpl", user); err != nil {
+		data := map[string]interface{}{
+			"activationToken": token.Plaintext,
+			"userID":          user.ID,
+		}
+		if err := app.mailer.Send(user.Email, "user_welcome.tmpl", data); err != nil {
 			app.logger.Printf("Error sending welcome email: %s", err)
 		}
 	}()

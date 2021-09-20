@@ -67,7 +67,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	db.AutoMigrate(&data.User{}, &data.Movie{})
+	db.AutoMigrate(&data.User{}, &data.Movie{}, &data.Token{})
 
 	logger.Printf("database connection pool established")
 

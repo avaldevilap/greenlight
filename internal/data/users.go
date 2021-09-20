@@ -1,6 +1,9 @@
 package data
 
 import (
+	"crypto/sha256"
+	"time"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -71,4 +74,14 @@ func (m *UserModel) GetAll() ([]User, error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (m *UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {
+	tokenHash := sha256.Sum256([]byte(tokenPlaintext))
+	var user User
+	err := m.DB.Joins("INNER JOIN tokens ON users.id = tokens.user_id").Where("tokens.hash = ?", tokenHash[:]).Where("tokens.scope = ?", tokenScope).Where("tokens.expiry > ?", time.Now()).Find(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

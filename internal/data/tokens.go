@@ -68,5 +68,5 @@ func (m *TokenModel) Insert(token *Token) error {
 }
 
 func (m *TokenModel) DeleteAllForUser(scope string, userID uint) error {
-	return m.DB.Delete(&Token{UserID: userID, Scope: scope}).Error
+	return m.DB.Where("scope = ?", scope).Where("user_id = ?", userID).Delete(&Token{}).Error
 }

@@ -11,16 +11,17 @@ import (
 )
 
 const (
-	ScopeActivation = "activation"
+	ScopeActivation     = "activation"
+	ScopeAuthentication = "authentication"
 )
 
 type Token struct {
-	Hash      []byte `gorm:"primaryKey"`
-	Plaintext string
-	UserID    uint
-	User      User
-	Expiry    time.Time
-	Scope     string `gorm:"not null"`
+	Hash      []byte    `json:"-" gorm:"primaryKey"`
+	Plaintext string    `json:"token"`
+	UserID    uint      `json:"-"`
+	User      User      `json:"-"`
+	Expiry    time.Time `json:"expiry"`
+	Scope     string    `json:"-" gorm:"not null"`
 }
 
 func (t *Token) Validate() error {

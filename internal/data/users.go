@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var AnonymousUser = &User{}
+
 type User struct {
 	gorm.Model
 	UUID      uuid.UUID `json:"uuid" gorm:"type:uuid"`
@@ -22,6 +24,10 @@ type User struct {
 func (u *User) Validate() error {
 	validate := validator.New()
 	return validate.Struct(u)
+}
+
+func (u *User) IsAnonymous() bool {
+	return u == AnonymousUser
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {

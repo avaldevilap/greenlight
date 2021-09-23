@@ -14,11 +14,12 @@ var AnonymousUser = &User{}
 
 type User struct {
 	gorm.Model
-	UUID      uuid.UUID `json:"uuid" gorm:"type:uuid"`
-	Name      string    `json:"name" validate:"required"`
-	Email     string    `json:"email" gorm:"unique" validate:"required,email"`
-	Password  string    `json:"-" validate:"required,min=8,max=72"`
-	Activated bool      `json:"activated"`
+	UUID        uuid.UUID    `json:"uuid" gorm:"type:uuid"`
+	Name        string       `json:"name" validate:"required"`
+	Email       string       `json:"email" gorm:"unique" validate:"required,email"`
+	Password    string       `json:"-" validate:"required,min=8,max=72"`
+	Activated   bool         `json:"activated"`
+	Permissions []Permission `json:"permissions" gorm:"many2many:users_permissions"`
 }
 
 func (u *User) Validate() error {
@@ -85,7 +86,15 @@ func (m *UserModel) GetAll() ([]User, error) {
 func (m *UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {
 	tokenHash := sha256.Sum256([]byte(tokenPlaintext))
 	var user User
-	err := m.DB.Joins("INNER JOIN tokens ON users.id = tokens.user_id").Where("tokens.hash = ?", tokenHash[:]).Where("tokens.scope = ?", tokenScope).Where("tokens.expiry > ?", time.Now()).Find(&user).Error
+	err := m.DB.Joins(
+		"INNER JOIN tokens ON users.id = tokens.user_id",
+	).Where(
+		"tokens.hash = ?", tokenHash[:],
+	).Where(
+		"tokens.scope = ?", tokenScope,
+	).Where(
+		"tokens.expiry > ?", time.Now(),
+	).Find(&user).Error
 	if err != nil {
 		return nil, err
 	}

@@ -67,6 +67,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
+	db.Exec("CREATE EXTENSION IF NOT EXISTS pgcrypto")
 	db.AutoMigrate(&data.User{}, &data.Movie{}, &data.Token{})
 
 	logger.Printf("database connection pool established")
